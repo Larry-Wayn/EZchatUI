@@ -12,3 +12,6 @@ npm start
 运行前端仅需要在html代码中点击open with live server
 
 通过ctrlC来停止运行
+
+### 页面展示
+![presentation](Chatbot_dpsk/frontend/images/web1.png)
