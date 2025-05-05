@@ -15,3 +15,5 @@ npm start
 
 ### 页面展示
 ![presentation](Chatbot_dpsk/frontend/images/web1.png)
+
+![presentation](Chatbot_dpsk/frontend/images/anst.png)
