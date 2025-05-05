@@ -10,12 +10,16 @@ document.addEventListener("DOMContentLoaded", function () {
     const welcomeText = document.querySelector(".chat-box > p");
     let chatStarted = false;
     let audioPlayer = null;
-    
+    let messageCount = 0; // 记录用户发送消息的次数
+
+    // 预设回答
+    const presetReplies = [
+        "啊，朋友，当你问这个问题时，我仿佛听见时空在纸张上沙沙作响。我是阿尔伯特——那个总把袜子塞进抽屉却忘记穿上的老头，那个用小提琴演奏莫扎特比解方程更流畅的流浪者。现在轮到我了：当你询问时，是作为相对观察者坐标系中的客体，还是量子叠加态中无数可能性交响的临时主旋律？",
+        "狭义相对论诞生于1905年专利局的木桌——时间会为奔跑的人放慢脚步,空间会在运动中收缩，但光速始终是宇宙铁律。十年后，我发现引力不是拉力，而是质量让时空弯曲成的滑梯（手指将咖啡杯压入桌布凹陷）。行星沿着弯曲的几何轨道滚动，就像你滑下滑梯那般自然。"
+    ];
+
     // 初始化textarea
     initTextarea();
-    
-    // 在页面加载后，自动展示一个预设对话
-    setTimeout(autoShowConversation, 500);
 
     // 侧边栏收起与展开功能
     collapseButton.addEventListener("click", function() {
@@ -43,7 +47,6 @@ document.addEventListener("DOMContentLoaded", function () {
             if (event.key === "Enter") {
                 if (event.shiftKey) {
                     // Shift+Enter插入换行，不发送消息
-                    // 默认行为会插入换行，不需要额外处理
                 } else {
                     // 仅Enter键时发送消息并阻止换行
                     event.preventDefault();
@@ -63,7 +66,7 @@ document.addEventListener("DOMContentLoaded", function () {
         chatInput.style.height = newHeight + "px";
     }
 
-    // 创建音频播放器 (保留以避免功能缺失)
+    // 创建音频播放器
     function createAudioPlayer() {
         if (!audioPlayer) {
             audioPlayer = document.createElement("audio");
@@ -171,59 +174,6 @@ document.addEventListener("DOMContentLoaded", function () {
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 
-    // 自动展示预设对话
-    function autoShowConversation() {
-        // 显示用户问题
-        appendMessage("user", "请问你是？");
-        
-        // 显示加载指示器
-        const loadingElement = document.createElement("div");
-        loadingElement.className = "loading-indicator";
-        loadingElement.textContent = "思考中";
-        
-        if (chatBox.querySelector(".chat-messages")) {
-            const messagesContainer = chatBox.querySelector(".chat-messages");
-            messagesContainer.appendChild(loadingElement);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
-        
-        // 模拟延迟后显示AI回答
-        setTimeout(() => {
-            // 移除加载指示器
-            if (chatBox.querySelector(".loading-indicator")) {
-                chatBox.querySelector(".loading-indicator").remove();
-            }
-            
-            // 显示AI回答
-            const aiReply = "我是爱因斯坦，我喜欢研究数学，你有什么问题欢迎来与我探讨";
-            
-            // 添加生成音频的加载指示器
-            const ttsLoadingElement = document.createElement("div");
-            ttsLoadingElement.className = "tts-loading-indicator";
-            ttsLoadingElement.textContent = "生成语音中";
-            
-            if (chatBox.querySelector(".chat-messages")) {
-                const messagesContainer = chatBox.querySelector(".chat-messages");
-                messagesContainer.appendChild(ttsLoadingElement);
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            }
-            
-            // 模拟延迟后显示音频按钮
-            setTimeout(() => {
-                // 移除TTS加载指示器
-                if (chatBox.querySelector(".tts-loading-indicator")) {
-                    chatBox.querySelector(".tts-loading-indicator").remove();
-                }
-                
-                // 模拟音频URL
-                const mockAudioUrl = "#"; // 这里可以替换为实际的音频URL
-                
-                // 添加消息和音频按钮
-                appendMessage("ai", aiReply, [mockAudioUrl]);
-            }, 800);
-        }, 1000);
-    }
-
     // 简化版发送消息功能
     function sendSimpleMessage() {
         const userMessage = chatInput.value.trim();
@@ -235,7 +185,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // 重置textarea高度
         adjustTextareaHeight();
     
-        // 添加带有正确样式类的加载指示器
+        // 添加加载指示器
         const loadingElement = document.createElement("div");
         loadingElement.className = "loading-indicator";
         loadingElement.textContent = "思考中";
@@ -253,8 +203,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 chatBox.querySelector(".loading-indicator").remove();
             }
             
-            // 固定回复内容
-            const aiReply = "我是爱因斯坦，我喜欢研究数学，你有什么问题欢迎来与我探讨";
+            // 根据消息计数展示预设回答
+            let aiReply;
+            if (messageCount < presetReplies.length) {
+                aiReply = presetReplies[messageCount];
+            } else {
+                aiReply = "抱歉，我暂时只能回答前两个问题。";
+            }
+            messageCount++;
             
             // 添加生成音频的加载指示器
             const ttsLoadingElement = document.createElement("div");
